@@ -33,6 +33,9 @@ target_include_directories(Qt6QuickMosquitto PUBLIC
 target_compile_definitions(Qt6QuickMosquitto
     PRIVATE $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:QT_QML_DEBUG>)
 
+target_link_directories(Qt6QuickMosquitto
+    PRIVATE ${CMAKE_PREFIX_PATH}/plugins/mosquitto)
+
 target_link_libraries(Qt6QuickMosquitto
     PRIVATE Qt6::Quick mosquitto)
 
