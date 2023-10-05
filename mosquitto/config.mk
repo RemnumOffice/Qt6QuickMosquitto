@@ -120,6 +120,9 @@ WITH_JEMALLOC:=no
 # probably of no particular interest to end users.
 WITH_XTREPORT=no
 
+# Build using clang and with address sanitiser enabled
+WITH_ASAN=no
+
 # =============================================================================
 # End of user configuration
 # =============================================================================
@@ -127,15 +130,15 @@ WITH_XTREPORT=no
 
 # Also bump lib/mosquitto.h, CMakeLists.txt,
 # installer/mosquitto.nsi, installer/mosquitto64.nsi
-VERSION=2.0.15
+VERSION=2.0.18
 
 # Client library SO version. Bump if incompatible API/ABI changes are made.
 SOVERSION=1
 
 # Man page generation requires xsltproc and docbook-xsl
-XSLTPROC=xsltproc 
+XSLTPROC=xsltproc --nonet
 # For html generation
-#DB_HTML_XSL=man/html.xsl
+DB_HTML_XSL=man/html.xsl
 
 #MANCOUNTRIES=en_GB
 
@@ -150,6 +153,12 @@ ifeq ($(UNAME),SunOS)
 	endif
 else
 	CFLAGS?=-Wall -ggdb -O2 -Wconversion -Wextra
+endif
+
+ifeq ($(WITH_ASAN),yes)
+	CC:=clang
+	CFLAGS+=-fsanitize=address
+	LDFLAGS+=-fsanitize=address
 endif
 
 STATIC_LIB_DEPS:=

@@ -8,11 +8,11 @@ cmake_minimum_required(VERSION 3.1)
 cmake_policy(SET CMP0042 NEW)
 
 project(mosquitto)
-set (VERSION 2.0.15)
+set (VERSION 2.0.18)
 
 ## qml modifications
 set (WITH_TLS NO)
-set (WITH_THREADING NO)
+set (WITH_THREADING YES)
 set (WITH_CJSON NO)
 set (WITH_BROKER NO)
 set (WITH_PLUGINS NO)
@@ -21,9 +21,6 @@ set (WITH_APPS NO)
 set (WITH_CLIENTS NO)
 
 #######################
-
-set (XSLTPROC "xsltproc --nonet")
-
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/")
 
 add_definitions (-DCMAKE -DVERSION=\"${VERSION}\")
@@ -101,34 +98,34 @@ else (WITH_THREADING)
 	set (PTHREAD_INCLUDE_DIR "")
 endif (WITH_THREADING)
 
-#option(WITH_DLT "Include DLT support?" OFF)
-#message(STATUS "WITH_DLT = ${WITH_DLT}")
-#if (WITH_DLT)
-#	#find_package(DLT REQUIRED)
-#	find_package(PkgConfig)
-#	pkg_check_modules(DLT "automotive-dlt >= 2.11")
-#	add_definitions("-DWITH_DLT")
-#endif (WITH_DLT)
+option(WITH_DLT "Include DLT support?" OFF)
+message(STATUS "WITH_DLT = ${WITH_DLT}")
+if (WITH_DLT)
+	#find_package(DLT REQUIRED)
+	find_package(PkgConfig)
+	pkg_check_modules(DLT "automotive-dlt >= 2.11")
+	add_definitions("-DWITH_DLT")
+endif (WITH_DLT)
 
-#option(WITH_CJSON "Build with cJSON support (required for dynamic security plugin and useful for mosquitto_sub)?" ON)
-#if (WITH_CJSON)
-#    FIND_PACKAGE(cJSON)
-#    if (CJSON_FOUND)
-#	    message(STATUS ${CJSON_FOUND})
-#    else (CJSON_FOUND)
-#	    message(STATUS "Optional dependency cJSON not found. Some features will be disabled.")
-#    endif(CJSON_FOUND)
-#endif()
+option(WITH_CJSON "Build with cJSON support (required for dynamic security plugin and useful for mosquitto_sub)?" ON)
+if (WITH_CJSON)
+    FIND_PACKAGE(cJSON)
+    if (CJSON_FOUND)
+	    message(STATUS ${CJSON_FOUND})
+    else (CJSON_FOUND)
+	    message(STATUS "Optional dependency cJSON not found. Some features will be disabled.")
+    endif(CJSON_FOUND)
+endif()
 
 # ========================================
 # Include projects
 # ========================================
 
-#option(WITH_CLIENTS "Build clients?" OFF)
-#option(WITH_BROKER "Build broker?" OFF)
-#option(WITH_APPS "Build apps?" OFF)
-#option(WITH_PLUGINS "Build plugins?" OFF)
-#option(DOCUMENTATION "Build documentation?" OFF)
+#option(WITH_CLIENTS "Build clients?" ON)
+#option(WITH_BROKER "Build broker?" ON)
+#option(WITH_APPS "Build apps?" ON)
+#option(WITH_PLUGINS "Build plugins?" ON)
+#option(DOCUMENTATION "Build documentation?" ON)
 
 add_subdirectory(lib)
 #if (WITH_CLIENTS)
@@ -151,8 +148,6 @@ add_subdirectory(lib)
 #	add_subdirectory(man)
 #endif (DOCUMENTATION)
 
-
-
 set (QT_QML_OUTPUT_PLUGIN_DIRECTORY   ${CMAKE_PREFIX_PATH}/plugins/mosquitto)
 file(MAKE_DIRECTORY ${QT_QML_OUTPUT_PLUGIN_DIRECTORY})
 set (CMAKE_INSTALL_INCLUDEDIR ${QT_QML_OUTPUT_PLUGIN_DIRECTORY})
@@ -161,8 +156,6 @@ set (CMAKE_INSTALL_BINDIR ${QT_QML_OUTPUT_PLUGIN_DIRECTORY})
 set_target_properties(libmosquitto PROPERTIES
     LIBRARY_OUTPUT_DIRECTORY ${QT_QML_OUTPUT_PLUGIN_DIRECTORY}
 )
-
-
 
 # ========================================
 # Install config file
@@ -184,5 +177,4 @@ install(FILES "${CMAKE_CURRENT_BINARY_DIR}/libmosquittopp.pc" DESTINATION "${CMA
 # ========================================
 # Testing
 # ========================================
-#enable_testing()
-
+enable_testing()
